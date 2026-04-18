@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/stianeikeland/go-rpio"
-	telebot "gopkg.in/telebot.v4"
+	"gopkg.in/telebot.v4"
+	//"github.com/stianeikeland/go-rpio"
 )
 
 var (
@@ -55,10 +55,10 @@ Usage:
 			log.Fatalf("Please check TELE_TOKEN env variable. %s", err)
 		}
 
-		if err := rpio.Open(); err != nil {
-			log.Fatalf("Unable to open GPIO: %s", err)
-		}
-		defer rpio.Close()
+		//if err := rpio.Open(); err != nil {
+		//	log.Fatalf("Unable to open GPIO: %s", err)
+		//}
+		//defer rpio.Close()
 
 		// Initialize traffic signals
 		trafficSignals := map[string]*TrafficSignal{
@@ -68,10 +68,10 @@ Usage:
 		}
 
 		// Initialize all pins as input
-		for _, signal := range trafficSignals {
-			pin := rpio.Pin(signal.Pin)
-			pin.Input()
-		}
+		//for _, signal := range trafficSignals {
+		//	pin := rpio.Pin(signal.Pin)
+		//	pin.Input()
+		//}
 
 		kbot.Handle(telebot.OnText, func(m telebot.Context) error {
 			log.Printf("Received message: %s", m.Text())
@@ -83,15 +83,15 @@ Usage:
 
 			case "red", "amber", "green":
 				signal := trafficSignals[payload]
-				pin := rpio.Pin(signal.Pin)
+				//pin := rpio.Pin(signal.Pin)
 
 				if !signal.On {
-					pin.Output()
-					pin.High()
+					//pin.Output()
+					//pin.High()
 					signal.On = true
 				} else {
-					pin.Low()
-					pin.Input()
+					//pin.Low()
+					//pin.Input()
 					signal.On = false
 				}
 
