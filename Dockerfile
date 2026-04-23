@@ -1,8 +1,6 @@
-# Використовуємо вказаний базовий образ
-FROM quay.io/projectquay/golang:1.22 as builder
+# Етап 1: builder (збираємо код)
+FROM quay.io/projectquay/golang:1.22 AS builder
 
-# Аргументи, які Docker підставляє автоматично при multi-platform збірці 
-# або які ми передаємо через Makefile
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -12,15 +10,20 @@ COPY . .
 # Проганяємо тести перед збіркою
 RUN go test -v ./...
 
-# Крос-компілюємо бінарний файл без CGO для стабільної роботи в мінімальних контейнерах
+# Крос-компілюємо бінарний файл без CGO
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -v -o kbot .
 
-# Другий етап: створюємо мінімальний робочий образ
-FROM scratch
-WORKDIR /
-COPY --from=builder /go/src/app/kbot /kbot
+# Етап 2: фінальний мінімальний образ
+# Використовуємо alpine замість scratch
+FROM alpine:latest
 
-# Копіюємо сертифікати (необхідно для Telegram API)
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+# Встановлюємо сертифікати (тут apk спрацює, бо це alpine!)
+RUN apk add -U --no-cache ca-certificates
 
-ENTRYPOINT ["/kbot"]
+# Правильний шлях без пробілу
+WORKDIR /app
+
+# Копіюємо ТІЛЬКИ готовий файл бота з першого етапу
+COPY --from=builder /go/src/app/kbot /app/kbot
+
+ENTRYPOINT ["/app/kbot"]
