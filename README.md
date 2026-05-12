@@ -1,3 +1,30 @@
+## CI/CD Workflow Schema
+
+Цей проєкт використовує автоматизований цикл CI/CD для розгортання Telegram-бота в Kubernetes за принципами GitOps.
+
+```mermaid
+graph TD
+    A[👨‍💻 Developer] -- "git push (develop)" --> B(GitHub Actions)
+    
+    subgraph "CI Pipeline"
+        B --> C{Run Tests}
+        C -- "Success" --> D[Build Docker Image]
+        D --> E[Push to GHCR.io]
+    end
+    
+    E --> F[Update Helm Tag in values.yaml]
+    F -- "Auto Commit" --> G[(GitHub Repo)]
+    
+    subgraph "CD (GitOps)"
+        G -- "Watch for changes" --> H(ArgoCD)
+        H -- "Auto Sync" --> I[Kubernetes Cluster]
+    end
+    
+    I --> J[🤖 Kbot Pod Running]
+    
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style H fill:#f96,stroke:#333,stroke-width:2px
+    style I fill:#32cd32,stroke:#333,stroke-width:2px
 # kbot
 
 A Telegram bot for controlling traffic light signals using GPIO pins on a Raspberry Pi.
