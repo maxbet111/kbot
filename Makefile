@@ -1,46 +1,17 @@
-APP := kbot
-REGISTRY := quay.io/kbot
-VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
+# Вкажи свій нікнейм на GitHub замість <your-github-user>
+REGISTRY ?= ghcr.io/<your-github-user>
+APP ?= kbot
+# Версія може братися з git або бути статичною
+VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
+TARGETOS ?= linux
+TARGETARCH ?= amd64
 
-# Визначаємо платформу та архітектуру хоста, на якому зараз виконується Makefile
-HOSTOS := $(shell go env GOOS)
-HOSTARCH := $(shell go env GOARCH)
+IMAGE_TAG := $(REGISTRY)/$(APP):$(VERSION)-$(TARGETOS)-$(TARGETARCH)
 
-# Формуємо тег образу
-IMAGE_TAG := $(REGISTRY)/$(APP):$(VERSION)-$(HOSTOS)-$(HOSTARCH)
-
-.PHONY: linux arm macos windows image clean
-
-linux:
-	GOOS=linux GOARCH=amd64 go build -v -o $(APP)-linux-amd64 .
-
-arm:
-	GOOS=linux GOARCH=arm64 go build -v -o $(APP)-linux-arm64 .
-
-macos:
-	GOOS=darwin GOARCH=amd64 go build -v -o $(APP)-darwin-amd64 .
-	GOOS=darwin GOARCH=arm64 go build -v -o $(APP)-darwin-arm64 .
-
-windows:
-	GOOS=windows GOARCH=amd64 go build -v -o $(APP)-windows-amd64.exe .
+# ... інші цілі ...
 
 image:
-	docker build -t $(IMAGE_TAG) \
-		--build-arg TARGETOS=$(HOSTOS) \
-		--build-arg TARGETARCH=$(HOSTARCH) .
-
-clean:
-	rm -f $(APP)-*
-	docker rmi $(IMAGE_TAG) || true
-	# Якщо це Go-проект, команда зазвичай така:
-
-# Якщо ви поки хочете просто "заглушку", щоб перевірити пайплайн:
-test:
-	echo "Running dummy tests..."
-
-.PHONY: test clean image windows push
-
-# ... твої існуючі цілі (test, image тощо) ...
+	docker build -t $(IMAGE_TAG) .
 
 push:
 	docker push $(IMAGE_TAG)
