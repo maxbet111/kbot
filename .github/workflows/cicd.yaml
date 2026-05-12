@@ -2,11 +2,6 @@ name: CI/CD Kbot
 
 on: push
 
-
-permissions:
-  contents: write
-  packages: write
-
 jobs:
   ci:
     name: CI
