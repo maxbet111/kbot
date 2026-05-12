@@ -1,11 +1,14 @@
 # Змінні
-REGISTRY ?= ghcr.io/mkoval
-APP ?= kbot
-VERSION ?= $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
-TARGETOS ?= linux
-TARGETARCH ?= amd64
+REGISTRY := ghcr.io/maxbet111
+APP := kbot
+# Додаємо архітектуру та ОС прямо в тег
+TARGETOS := linux
+TARGETARCH := amd64
 
-IMAGE_TAG := $(REGISTRY)/$(APP):$(VERSION)-$(TARGETOS)-$(TARGETARCH)
+# Формуємо версію з хешем та архітектурою
+VERSION := v1.0.0-$(shell git rev-parse --short HEAD)-$(TARGETOS)-$(TARGETARCH)
+
+IMAGE_TAG := $(REGISTRY)/$(APP):$(VERSION)
 
 .PHONY: test image push
 

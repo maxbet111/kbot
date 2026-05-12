@@ -32,15 +32,15 @@ jobs:
         id: build
         run: |
           # Генеруємо унікальний тег на основі хешу коміту
-          TAG="v1.0.0-$(git rev-parse --short HEAD)"
-          echo "NEW_TAG=$TAG" >> $GITHUB_ENV
+          SHA=$(git rev-parse --short HEAD)
+          TAG="v1.0.0-${SHA}-linux-amd64"
           
           # Перетворюємо назву репозиторію в нижній регістр для GHCR
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           
           # Викликаємо make, передаючи змінні напряму
-          make image REGISTRY=ghcr.io/$REPO_LOWER VERSION=$TAG
-          make push REGISTRY=ghcr.io/$REPO_LOWER VERSION=$TAG
+          make image REGISTRY=ghcr.io/maxbet111 VERSION=${TAG}
+          make push REGISTRY=ghcr.io/maxbet111 VERSION=${TAG}
 
       - name: Update Helm Chart Tag
         run: |
