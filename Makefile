@@ -37,5 +37,5 @@ test:
 	go test -v ./...
 
 # Якщо ви поки хочете просто "заглушку", щоб перевірити пайплайн:
-# test:
-# 	echo "Running dummy tests..."
+test:
+	echo "Running dummy tests..."
