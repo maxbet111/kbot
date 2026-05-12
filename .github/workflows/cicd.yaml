@@ -2,6 +2,10 @@ name: CI/CD Kbot
 
 on: push
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   ci:
     name: CI
@@ -25,8 +29,15 @@ jobs:
           APP: "kbot"
           # Якщо використовуєш Docker Hub, то REGISTRY — це твій username
           # Якщо GHCR — то ghcr.io/${{ github.repository_owner }}
-          REGISTRY: ${{ secrets.DOCKER_USERNAME }}
+          REGISTRY: ghcr.io/$(shell echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')
         run: |
           # Можна викликати окремо або разом, якщо цілі прописані в Makefile
           make image
           make push
+      
+      - name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
