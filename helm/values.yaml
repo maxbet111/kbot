@@ -2,18 +2,14 @@ replicaCount: 1
 image:
   registry: "ghcr.io"
   repository: "maxbet111/kbot" # Наприклад: maxbet111/mk-app
-  tag: ""
+  tag: "1.0.0" # Це буде змінюватися автоматично
   os: linux
   arch: amd64
 
-# ArgoCD ламається, бо шукає саме цей блок 'secret' (без 's' в кінці)
 secret:
   env:
-    teleToken: "" # Сюди можна вставити токен, якщо шаблон бере його звідси
-
-# Твій старий блок (можеш залишити, якщо він десь використовується)
-secrets:
-  teleToken: ""
+    - name: "TELE_TOKEN" # ТЕПЕР ІМ'Я ПЕРЕДАЄТЬСЯ ЯВНО
+      value: "12345:ABCDE" # Твій токен (або порожньо, якщо через секрети)
 
 securityContext:
   privileged: true
