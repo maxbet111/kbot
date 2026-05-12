@@ -1,149 +1,33 @@
-## CI/CD Workflow Schema
+## 🏗 CI/CD Infrastructure Schema
 
-Цей проєкт використовує автоматизований цикл CI/CD для розгортання Telegram-бота в Kubernetes за принципами GitOps.
+Ця схема демонструє повний шлях вашого коду: від натискання `git push` до працюючого бота в кластері Kubernetes.
 
 ```mermaid
-graph TD
-    A[👨‍💻 Developer] -- "git push (develop)" --> B(GitHub Actions)
-    
-    subgraph "CI Pipeline"
-        B --> C{Run Tests}
-        C -- "Success" --> D[Build Docker Image]
-        D --> E[Push to GHCR.io]
+graph LR
+    subgraph "Local Environment"
+        Dev[👨‍💻 Developer] -- "git push" --> Repo
     end
-    
-    E --> F[Update Helm Tag in values.yaml]
-    F -- "Auto Commit" --> G[(GitHub Repo)]
-    
-    subgraph "CD (GitOps)"
-        G -- "Watch for changes" --> H(ArgoCD)
-        H -- "Auto Sync" --> I[Kubernetes Cluster]
+
+    subgraph "GitHub (CI)"
+        Repo(GitHub Repository) --> GHA{GitHub Actions}
+        GHA --> Tests[🧪 Unit Tests]
+        Tests --> Build[📦 Docker Build]
+        Build --> GHCR[(GitHub Container Registry)]
     end
-    
-    I --> J[🤖 Kbot Pod Running]
-    
-    style B fill:#f9f,stroke:#333,stroke-width:2px
-    style H fill:#f96,stroke:#333,stroke-width:2px
-    style I fill:#32cd32,stroke:#333,stroke-width:2px
-# kbot
 
-A Telegram bot for controlling traffic light signals using GPIO pins on a Raspberry Pi.
+    subgraph "GitOps (CD)"
+        GHCR --> UpdateTag[📝 Update Helm Tag]
+        UpdateTag -- "commit" --> Repo
+        Repo -- "monitor" --> ArgoCD{ArgoCD}
+    end
 
-## Features
+    subgraph "Infrastructure (K8s)"
+        ArgoCD -- "Sync State" --> K8s[Cloud/Local Cluster]
+        K8s --> Pod[🤖 Telegram Bot Pod]
+    end
 
-- Control traffic light signals (red, amber, green) through Telegram commands
-- Toggle individual lights on/off
-- Simple and intuitive command interface
-- GPIO pin control for Raspberry Pi
-- Cross-platform support (Linux, Darwin, Windows)
-- Multi-architecture support (amd64, arm64)
-- Docker containerization support
-
-## Prerequisites
-
-- Raspberry Pi with GPIO access
-- Go 1.16 or later
-- Docker (optional, for containerization)
-- Telegram Bot Token (set as TELE_TOKEN environment variable)
-- Required Go packages:
-  - github.com/spf13/cobra
-  - github.com/stianeikeland/go-rpio
-  - gopkg.in/telebot.v4
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/kbot.git
-cd kbot
-```
-
-2. Set up your Telegram Bot Token:
-```bash
-export TELE_TOKEN="your_telegram_bot_token"
-```
-
-3. Build the application:
-```bash
-make build
-```
-
-## Build Options
-
-The project supports various build targets through Makefile:
-
-- `make format` - Format Go code
-- `make lint` - Run golint
-- `make test` - Run tests
-- `make get` - Get dependencies
-- `make build` - Build the application
-- `make image` - Build Docker image
-- `make push` - Push Docker image to registry
-- `make clean` - Clean build artifacts
-
-### Build Configuration
-
-You can customize the build by setting environment variables:
-```bash
-TARGETOS=linux    # Target OS (linux, darwin, windows)
-TARGETARCH=arm64  # Target architecture (amd64, arm64)
-```
-
-## Docker Deployment
-
-1. Build the Docker image:
-```bash
-make image
-```
-
-2. Push to registry (optional):
-```bash
-make push
-```
-
-The Docker image will be tagged as:
-```
-${REGISTRY}/${APP}:${VERSION}-${TARGETARCH}
-```
-
-## Usage
-
-Start the bot:
-```bash
-./kbot start
-```
-
-### Available Commands
-
-- `/s red` - Toggle red light
-- `/s amber` - Toggle amber light
-- `/s green` - Toggle green light
-- `hello` - Get a greeting from the bot
-
-### GPIO Pin Configuration
-
-The bot uses the following GPIO pins by default:
-- Red light: GPIO 12
-- Amber light: GPIO 27
-- Green light: GPIO 22
-
-## Development
-
-The project uses Cobra for CLI command management and go-rpio for GPIO control.
-
-### Project Structure
-
-- `cmd/` - Contains the main command implementations
-  - `kbot.go` - Main bot implementation and traffic light control
-  - `root.go` - Root command configuration
-  - `version.go` - Version command implementation
-
-## Versioning
-
-The application version is automatically generated during build using:
-- Latest git tag
-- Short commit hash
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+    %% Стилізація вузлів
+    style GHA fill:#f9f,stroke:#333,stroke-width:2px
+    style GHCR fill:#4169e1,stroke:#fff,stroke-width:2px,color:#fff
+    style ArgoCD fill:#f96,stroke:#333,stroke-width:2px
+    style K8s fill:#32cd32,stroke:#333,stroke-width:2px
