@@ -3,12 +3,14 @@
 # Declare variables to be passed into your templates.
 replicaCount: 1
 image:
-  repository: "denvasyliev"
-  tag: "v1.0.0-b161809"
+  registry: "ghcr.io"
+  repository: "maxbet111/kbot" # Наприклад: maxbet111/mk-app
+  tag: "v0.0.1" # Це буде змінюватися автоматично
+  os: linux
   arch: amd64
-secret:
-  name: "kbot"
-  env: "TELE_TOKEN"
-  key: "token"
+
+# Не забудь про TELE_TOKEN, який ми обговорювали раніше
+secrets:
+  teleToken: ""
 securityContext:
   privileged: true
