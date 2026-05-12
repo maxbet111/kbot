@@ -5,7 +5,7 @@ replicaCount: 1
 image:
   registry: "ghcr.io"
   repository: "maxbet111/kbot" # Наприклад: maxbet111/mk-app
-  tag: "v0.0.1" # Це буде змінюватися автоматично
+  tag: "v1.0.0-139d06e"
   os: linux
   arch: amd64
 
