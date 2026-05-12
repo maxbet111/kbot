@@ -24,3 +24,5 @@ image:
 # 3. Ціль для відправки
 push:
 	docker push $(REGISTRY)/$(APP):$(VERSION)
+build:
+	go build -v -o kbot main.go
