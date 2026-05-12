@@ -16,8 +16,8 @@ test:
 
 # 2. Ціль для збірки
 image:
-	docker build -t $(IMAGE_TAG) .
+	docker build -t $(REGISTRY)/$(APP):$(VERSION) .
 
 # 3. Ціль для відправки
 push:
-	docker push $(IMAGE_TAG)
+	docker push $(REGISTRY)/$(APP):$(VERSION)

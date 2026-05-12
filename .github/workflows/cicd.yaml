@@ -4,7 +4,6 @@ on:
   push:
     branches: [ develop ]
 
-# КРИТИЧНО для GHCR: даємо права на запис пакетів
 permissions:
   contents: write
   packages: write
@@ -30,6 +29,29 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
+        id: build
         run: |
-          make image
-          make push
+          # Генеруємо унікальний тег на основі хешу коміту
+          TAG="v1.0.0-$(git rev-parse --short HEAD)"
+          echo "NEW_TAG=$TAG" >> $GITHUB_ENV
+          
+          # Перетворюємо назву репозиторію в нижній регістр для GHCR
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          
+          # Викликаємо make, передаючи змінні напряму
+          make image REGISTRY=ghcr.io/$REPO_LOWER VERSION=$TAG
+          make push REGISTRY=ghcr.io/$REPO_LOWER VERSION=$TAG
+
+      - name: Update Helm Chart Tag
+        run: |
+          # Оновлюємо значення tag у values.yaml
+          sed -i "s/tag: .*/tag: \"${{ env.NEW_TAG }}\"/" helm/values.yaml
+          
+          # Налаштовуємо Git для коміту від імені бота
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          
+          # Комітимо та пушимо зміни назад у гілку develop
+          git add helm/values.yaml
+          git commit -m "chore: update image tag to ${{ env.NEW_TAG }} [skip ci]"
+          git push origin develop
