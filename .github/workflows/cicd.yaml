@@ -23,5 +23,10 @@ jobs:
       - name: Build and push Docker image
         env:
           APP: "kbot"
+          # Якщо використовуєш Docker Hub, то REGISTRY — це твій username
+          # Якщо GHCR — то ghcr.io/${{ github.repository_owner }}
           REGISTRY: ${{ secrets.DOCKER_USERNAME }}
-        run: make image push
+        run: |
+          # Можна викликати окремо або разом, якщо цілі прописані в Makefile
+          make image
+          make push

@@ -33,7 +33,14 @@ clean:
 	rm -f $(APP)-*
 	docker rmi $(IMAGE_TAG) || true
 	# Якщо це Go-проект, команда зазвичай така:
-	
+
 # Якщо ви поки хочете просто "заглушку", щоб перевірити пайплайн:
 test:
 	echo "Running dummy tests..."
+
+.PHONY: test clean image windows push
+
+# ... твої існуючі цілі (test, image тощо) ...
+
+push:
+	docker push $(IMAGE_TAG)
