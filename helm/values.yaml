@@ -1,16 +1,19 @@
-# Default values for helm.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 replicaCount: 1
 image:
   registry: "ghcr.io"
   repository: "maxbet111/kbot" # Наприклад: maxbet111/mk-app
-  tag: "v0.0.1" # Це буде змінюватися автоматично
+  tag: ""
   os: linux
   arch: amd64
 
-# Не забудь про TELE_TOKEN, який ми обговорювали раніше
+# ArgoCD ламається, бо шукає саме цей блок 'secret' (без 's' в кінці)
+secret:
+  env:
+    teleToken: "" # Сюди можна вставити токен, якщо шаблон бере його звідси
+
+# Твій старий блок (можеш залишити, якщо він десь використовується)
 secrets:
   teleToken: ""
+
 securityContext:
   privileged: true
