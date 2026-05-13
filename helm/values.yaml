@@ -1,16 +1,23 @@
-# Default values for helm.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
 replicaCount: 1
 image:
   registry: "ghcr.io"
   repository: "maxbet111/kbot" # Наприклад: maxbet111/mk-app
-  tag: "v0.0.1" # Це буде змінюватися автоматично
+<<<<<<< HEAD
+  tag: "v1.0.0-106879e" # Це буде змінюватися автоматично
+=======
+<<<<<<< HEAD
+  tag: ""
+=======
+  tag: ""
+>>>>>>> e3cdf5af2bf583d41daa59815b8d3927c6df2537
+>>>>>>> bc9bba324f08230581edac3d21a1cccfc116b8f9
   os: linux
   arch: amd64
 
-# Не забудь про TELE_TOKEN, який ми обговорювали раніше
-secrets:
-  teleToken: ""
+secret:
+  env:
+    - name: "TELE_TOKEN" # ТЕПЕР ІМ'Я ПЕРЕДАЄТЬСЯ ЯВНО
+      value: "12345:ABCDE" # Твій токен (або порожньо, якщо через секрети)
+
 securityContext:
   privileged: true
