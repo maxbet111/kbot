@@ -3,7 +3,7 @@ image:
   registry: "ghcr.io"
   repository: "maxbet111/kbot" # Наприклад: maxbet111/mk-app
 <<<<<<< HEAD
-  tag: "v1.0.0-106879e" # Це буде змінюватися автоматично
+  tag: ""
 =======
 <<<<<<< HEAD
   tag: ""
