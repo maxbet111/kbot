@@ -1,0 +1,40 @@
+# Використовуємо офіційний образ Go для збірки
+image: golang:1.22
+
+# Визначаємо етапи (аналог stages у Jenkins)
+stages:
+  - build
+
+# Глобальні змінні
+variables:
+  APP_NAME: "kbot"
+
+# Опис завдання збірки
+build-kbot:
+  stage: build
+  # Використання матриці дозволяє замінити параметри Jenkins. 
+  # GitLab автоматично запустить 6 окремих завдань для всіх комбінацій.
+  parallel:
+    matrix:
+      - TARGET_OS: [linux, windows, darwin]
+        TARGET_ARCH: [amd64, arm64]
+  
+  script:
+    - echo "Розпочато збірку..."
+    # Логіка визначення імені файлу (додавання .exe для Windows)
+    - OUTPUT_NAME="${APP_NAME}-${TARGET_OS}-${TARGET_ARCH}"
+    - if [ "$TARGET_OS" = "windows" ]; then OUTPUT_NAME="${OUTPUT_NAME}.exe"; fi
+    # Команда збірки (Go підтримує крос-компіляцію через змінні оточення)
+    - GOOS=$TARGET_OS GOARCH=$TARGET_ARCH go build -o $OUTPUT_NAME
+    - echo "Збірка завершена - $OUTPUT_NAME"  # Обов'язково з дефісом на початку!
+
+  # Збереження артефактів (аналог archiveArtifacts)
+  artifacts:
+    paths:
+      - kbot-*
+    expire_in: 1 week
+
+  # Налаштування запуску (можна запускати вручну або при пуші)
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "web" # Дозволяє запускати через кнопку "Run pipeline"
